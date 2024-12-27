@@ -135,3 +135,10 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# CSRF Trusted Origins
+CSRF_TRUSTED_ORIGINS = [
+    'https://gh.garciadelacruz.es',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
