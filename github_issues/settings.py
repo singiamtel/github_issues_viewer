@@ -103,10 +103,26 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SITE_URL = os.getenv('SITE_URL', 'http://localhost:8000')
+# Ensure SITE_URL is properly formatted with https:// and no trailing slash
+raw_site_url = os.getenv('SITE_URL', 'http://localhost:8000')
+SITE_URL = raw_site_url.replace('http://', 'https://').rstrip('/')
+
 SOCIAL_AUTH_GITHUB_KEY = os.getenv('GITHUB_KEY')
 SOCIAL_AUTH_GITHUB_SECRET = os.getenv('GITHUB_SECRET')
 SOCIAL_AUTH_GITHUB_SCOPE = ['repo']
+
+# Force HTTPS for callback
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+
+# Debug settings for social auth
+SOCIAL_AUTH_GITHUB_STATE_PARAMETER = True
+SOCIAL_AUTH_RAISE_EXCEPTIONS = True
+RAISE_EXCEPTIONS = True
+DEBUG = True
+
+# Print the callback URL for debugging
+print("GitHub OAuth Callback URL will be:", os.getenv(
+    'SITE_URL') + '/complete/github/', file=sys.stderr)
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
