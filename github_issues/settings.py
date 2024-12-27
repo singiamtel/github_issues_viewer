@@ -110,7 +110,8 @@ SITE_URL = raw_site_url.rstrip('/')
 
 SOCIAL_AUTH_GITHUB_KEY = os.getenv('GITHUB_KEY')
 SOCIAL_AUTH_GITHUB_SECRET = os.getenv('GITHUB_SECRET')
-SOCIAL_AUTH_GITHUB_SCOPE = ['repo']
+SOCIAL_AUTH_GITHUB_SCOPE = ['read:repo_hook',
+                            'read:org', 'read:user', 'repo:status']
 
 # Debug settings for social auth
 SOCIAL_AUTH_GITHUB_STATE_PARAMETER = True
