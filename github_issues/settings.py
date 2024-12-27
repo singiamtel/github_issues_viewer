@@ -125,7 +125,10 @@ LOGOUT_REDIRECT_URL = 'home'
 
 # CSRF Trusted Origins
 CSRF_TRUSTED_ORIGINS = [
+    'https://gh.garciadelacruz.es',
     'http://gh.garciadelacruz.es',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
+
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
