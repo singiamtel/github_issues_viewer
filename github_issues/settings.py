@@ -121,10 +121,6 @@ SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 RAISE_EXCEPTIONS = True
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-# Print the callback URL for debugging
-print("GitHub OAuth Callback URL will be:", os.getenv(
-    'SITE_URL') + '/complete/github/', file=sys.stderr)
-
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_URL = 'logout'
