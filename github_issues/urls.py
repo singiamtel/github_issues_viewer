@@ -6,5 +6,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('issues.urls')),
     path('', include('social_django.urls', namespace='social')),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-] 
+    path('logout/', auth_views.LogoutView.as_view(
+        http_method_names=['get', 'post']), name='logout'),
+]
