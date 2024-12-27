@@ -133,3 +133,38 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stderr,
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'ERROR',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
+            'propagate': False,
+        },
+        'issues': {
+            'handlers': ['console'],
+            'level': os.getenv('APP_LOG_LEVEL', 'ERROR'),
+            'propagate': False,
+        },
+    },
+}
