@@ -5,7 +5,8 @@ services:
       - .env
     volumes:
       - static_volume:/app/staticfiles
-    command: gunicorn github_issues.wsgi:application --bind 0.0.0.0:8000 --workers 3
+      - .:/app
+    command: sh /app/entrypoint.sh
 
   caddy:
     image: caddy:2.7
@@ -15,7 +16,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     ports:
-      - "8000:8000"
+      - "8000:80"
     depends_on:
       - web
 
