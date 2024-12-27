@@ -104,16 +104,13 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-# Ensure SITE_URL is properly formatted with https:// and no trailing slash
+# Ensure SITE_URL is properly formatted with http:// and no trailing slash
 raw_site_url = os.getenv('SITE_URL', 'http://localhost:8000')
-SITE_URL = raw_site_url.replace('http://', 'https://').rstrip('/')
+SITE_URL = raw_site_url.rstrip('/')
 
 SOCIAL_AUTH_GITHUB_KEY = os.getenv('GITHUB_KEY')
 SOCIAL_AUTH_GITHUB_SECRET = os.getenv('GITHUB_SECRET')
 SOCIAL_AUTH_GITHUB_SCOPE = ['repo']
-
-# Force HTTPS for callback
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 
 # Debug settings for social auth
 SOCIAL_AUTH_GITHUB_STATE_PARAMETER = True
@@ -126,16 +123,9 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'home'
 
-# Security settings for production
-SECURE_SSL_REDIRECT = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-
 # CSRF Trusted Origins
 CSRF_TRUSTED_ORIGINS = [
-    'https://gh.garciadelacruz.es',
+    'http://gh.garciadelacruz.es',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
