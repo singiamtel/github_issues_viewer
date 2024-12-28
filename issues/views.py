@@ -14,7 +14,7 @@ def home(request):
 
 
 def login(request):
-    return render(request, 'issues/login.html')
+    return redirect('social:begin', 'github')
 
 
 @login_required
