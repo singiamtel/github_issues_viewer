@@ -2,7 +2,9 @@ import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.http import HttpResponse, HttpResponseForbidden
 import requests
+import re
 
 logger = logging.getLogger('issues')
 
@@ -96,3 +98,41 @@ def issues_list(request, owner, repo):
 
 def logout_view(request):
     return render(request, 'registration/logout.html')
+
+
+@login_required
+def proxy_github_asset(request, path):
+    """Proxy requests to GitHub assets with proper authentication."""
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden()
+
+    try:
+        social = request.user.social_auth.get(provider='github')
+        access_token = social.extra_data['access_token']
+
+        headers = {
+            'Authorization': f'token {access_token}',
+            'Accept': 'application/vnd.github.v3.raw',
+        }
+
+        # Reconstruct the full GitHub URL
+        github_url = f'https://github.com/{path}'
+
+        # Make the authenticated request to GitHub
+        response = requests.get(github_url, headers=headers, stream=True)
+
+        if response.status_code == 200:
+            # Stream the response back to the client
+            return HttpResponse(
+                response.raw.read(),
+                content_type=response.headers.get(
+                    'content-type', 'application/octet-stream')
+            )
+        else:
+            logger.error(
+                f"Failed to fetch GitHub asset: {response.status_code}")
+            return HttpResponse(status=response.status_code)
+
+    except Exception as e:
+        logger.error(f"Error proxying GitHub asset: {str(e)}")
+        return HttpResponse(status=500)
