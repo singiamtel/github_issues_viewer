@@ -66,20 +66,6 @@ def issues_list(request, owner, repo):
         'Accept': 'application/vnd.github.v3+json'
     }
 
-    # First check what permissions we have
-    user_url = 'https://api.github.com/user'
-    user_response = requests.get(user_url, headers=headers)
-    logger.info(f"User API response status: {user_response.status_code}")
-    if user_response.status_code == 200:
-        logger.info(f"Authenticated as: {user_response.json().get('login')}")
-
-    # Check installation permissions
-    installation_url = 'https://api.github.com/user/installations'
-    install_response = requests.get(installation_url, headers=headers)
-    logger.info(f"Installation API response: {install_response.status_code}")
-    if install_response.status_code == 200:
-        logger.info(f"Installations: {install_response.text}")
-
     # Get repository info
     repo_url = f'https://api.github.com/repos/{owner}/{repo}'
     repo_response = requests.get(repo_url, headers=headers)
