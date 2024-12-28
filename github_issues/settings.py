@@ -9,7 +9,10 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-change-this')
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY is not set in the environment variables")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
@@ -110,8 +113,10 @@ SITE_URL = raw_site_url.rstrip('/')
 
 SOCIAL_AUTH_GITHUB_KEY = os.getenv('GITHUB_KEY')
 SOCIAL_AUTH_GITHUB_SECRET = os.getenv('GITHUB_SECRET')
-SOCIAL_AUTH_GITHUB_SCOPE = ['read:repo_hook',
-                            'read:org', 'read:user', 'repo:status']
+SOCIAL_AUTH_GITHUB_SCOPE = [
+    'repo',           # Full access to public and private repositories
+    'read:user',      # Read user profile info
+]
 
 # Debug settings for social auth
 SOCIAL_AUTH_GITHUB_STATE_PARAMETER = True
@@ -122,7 +127,7 @@ DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_URL = 'logout'
-LOGOUT_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'bye'
 
 # CSRF Trusted Origins
 CSRF_TRUSTED_ORIGINS = [
@@ -132,7 +137,9 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
 ]
 
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+# Don't redirect to HTTPS in development (localhost)
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True if SITE_URL != 'http://localhost:8000' else False
+
 
 # Logging Configuration
 LOGGING = {
@@ -153,17 +160,17 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'ERROR',
+        'level': 'INFO',
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'propagate': False,
         },
         'issues': {
             'handlers': ['console'],
-            'level': os.getenv('APP_LOG_LEVEL', 'ERROR'),
+            'level': os.getenv('APP_LOG_LEVEL', 'DEBUG'),
             'propagate': False,
         },
     },

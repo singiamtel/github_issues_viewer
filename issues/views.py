@@ -1,13 +1,19 @@
+import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 import requests
 
+logger = logging.getLogger('issues')
+
+
 def home(request):
     return render(request, 'issues/home.html')
 
+
 def login(request):
     return render(request, 'issues/login.html')
+
 
 @login_required
 def select_repository(request):
@@ -18,34 +24,59 @@ def select_repository(request):
             parts = repo_url.strip('/').split('/')
             owner, repo = parts[-2], parts[-1]
             return redirect('issues_list', owner=owner, repo=repo)
-        except:
+        except Exception as e:
+            logger.error(
+                f"Invalid repository URL: {repo_url}. Error: {str(e)}")
             return render(request, 'issues/select_repository.html', {'error': 'Invalid repository URL'})
-    
+
     return render(request, 'issues/select_repository.html')
+
 
 @login_required
 def issues_list(request, owner, repo):
     social = request.user.social_auth.get(provider='github')
     access_token = social.extra_data['access_token']
-    
+
+    logger.info(f"Attempting to access repository {owner}/{repo}")
+
     headers = {
         'Authorization': f'token {access_token}',
         'Accept': 'application/vnd.github.v3+json'
     }
-    
+
+    # First check what permissions we have
+    user_url = 'https://api.github.com/user'
+    user_response = requests.get(user_url, headers=headers)
+    logger.info(f"User API response status: {user_response.status_code}")
+    if user_response.status_code == 200:
+        logger.info(f"Authenticated as: {user_response.json().get('login')}")
+
+    # Check installation permissions
+    installation_url = f'https://api.github.com/user/installations'
+    install_response = requests.get(installation_url, headers=headers)
+    logger.info(f"Installation API response: {install_response.status_code}")
+    if install_response.status_code == 200:
+        logger.info(f"Installations: {install_response.text}")
+
     # Get repository info
     repo_url = f'https://api.github.com/repos/{owner}/{repo}'
     repo_response = requests.get(repo_url, headers=headers)
-    
+
+    logger.info(f"Repository API response status: {repo_response.status_code}")
     if repo_response.status_code != 200:
+        error_message = repo_response.json().get('message', 'Unknown error')
+        logger.error(
+            f"Failed to fetch repository {owner}/{repo}. Status code: {repo_response.status_code}, Error: {error_message}")
         return render(request, 'issues/error.html', {
-            'message': 'Repository not found or access denied'
+            'message': f'Repository access error: {error_message}'
         })
-    
+
     # Get issues
     issues_url = f'https://api.github.com/repos/{owner}/{repo}/issues'
-    response = requests.get(issues_url, headers=headers, params={'state': 'all'})
-    
+    response = requests.get(issues_url, headers=headers,
+                            params={'state': 'all'})
+
+    logger.info(f"Issues API response status: {response.status_code}")
     if response.status_code == 200:
         issues = response.json()
         return render(request, 'issues/issues_list.html', {
@@ -55,6 +86,13 @@ def issues_list(request, owner, repo):
             'repo_data': repo_response.json()
         })
     else:
+        error_message = response.json().get('message', 'Unknown error')
+        logger.error(
+            f"Failed to fetch issues for {owner}/{repo}. Status code: {response.status_code}, Error: {error_message}")
         return render(request, 'issues/error.html', {
-            'message': 'Failed to fetch issues'
-        }) 
+            'message': f'Failed to fetch issues: {error_message}'
+        })
+
+
+def logout_view(request):
+    return render(request, 'registration/logout.html')
