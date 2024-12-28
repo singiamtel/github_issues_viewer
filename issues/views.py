@@ -5,6 +5,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 import requests
 import re
+from collections import OrderedDict
 
 logger = logging.getLogger('issues')
 
@@ -19,19 +20,42 @@ def login(request):
 
 @login_required
 def select_repository(request):
+    # Get recent repositories from session
+    recent_repos = request.session.get('recent_repos', [])
+
     if request.method == 'POST':
         repo_url = request.POST.get('repo_url', '')
         try:
             # Extract owner and repo from URL like https://github.com/owner/repo
             parts = repo_url.strip('/').split('/')
             owner, repo = parts[-2], parts[-1]
+
+            # Add to recent repos
+            repo_data = {'owner': owner, 'repo': repo,
+                         'url': f'https://github.com/{owner}/{repo}'}
+
+            # Remove if already exists (to move it to the top)
+            recent_repos = [
+                r for r in recent_repos if r['url'] != repo_data['url']]
+
+            # Add to the beginning and limit to 5 recent repos
+            recent_repos.insert(0, repo_data)
+            recent_repos = recent_repos[:5]
+
+            # Save back to session
+            request.session['recent_repos'] = recent_repos
+            request.session.modified = True
+
             return redirect('issues_list', owner=owner, repo=repo)
         except Exception as e:
             logger.error(
                 f"Invalid repository URL: {repo_url}. Error: {str(e)}")
-            return render(request, 'issues/select_repository.html', {'error': 'Invalid repository URL'})
+            return render(request, 'issues/select_repository.html', {
+                'error': 'Invalid repository URL',
+                'recent_repos': recent_repos
+            })
 
-    return render(request, 'issues/select_repository.html')
+    return render(request, 'issues/select_repository.html', {'recent_repos': recent_repos})
 
 
 @login_required
@@ -82,6 +106,24 @@ def issues_list(request, owner, repo):
     logger.info(f"Issues API response status: {response.status_code}")
     if response.status_code == 200:
         issues = response.json()
+
+        # Add to recent repos if successful
+        recent_repos = request.session.get('recent_repos', [])
+        repo_data = {'owner': owner, 'repo': repo,
+                     'url': f'https://github.com/{owner}/{repo}'}
+
+        # Remove if already exists (to move it to the top)
+        recent_repos = [
+            r for r in recent_repos if r['url'] != repo_data['url']]
+
+        # Add to the beginning and limit to 5 recent repos
+        recent_repos.insert(0, repo_data)
+        recent_repos = recent_repos[:5]
+
+        # Save back to session
+        request.session['recent_repos'] = recent_repos
+        request.session.modified = True
+
         return render(request, 'issues/issues_list.html', {
             'issues': issues,
             'owner': owner,
