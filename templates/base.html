@@ -15,6 +15,21 @@
         });
     </script>
     {% endif %}
+    <script>
+        function disableLoginButtons() {
+            const loginButtons = document.querySelectorAll('.github-login-btn');
+            loginButtons.forEach(button => {
+                button.disabled = true;
+                button.classList.add('opacity-75', 'cursor-not-allowed');
+                // Add loading spinner
+                const icon = button.querySelector('i');
+                if (icon) {
+                    icon.className = 'fas fa-spinner fa-spin mr-2';
+                }
+                button.querySelector('span').textContent = 'Logging in...';
+            });
+        }
+    </script>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <nav class="bg-white shadow-lg">
@@ -37,8 +52,9 @@
                             Logout
                         </a>
                     {% else %}
-                        <a href="{% url 'social:begin' 'github' %}" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium">
-                            Login with GitHub
+                        <a href="{% url 'social:begin' 'github' %}" onclick="disableLoginButtons()" class="github-login-btn bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            <i class="fab fa-github mr-2"></i>
+                            <span>Login with GitHub</span>
                         </a>
                     {% endif %}
                 </div>
