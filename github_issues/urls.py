@@ -12,7 +12,7 @@ from django.contrib.staticfiles.views import serve
 def logout_view(request):
     """Custom logout view that handles both Django and social auth logout"""
     logout(request)
-    return redirect(settings.LOGOUT_REDIRECT_URL)
+    return redirect('bye')
 
 
 urlpatterns = [
@@ -20,4 +20,5 @@ urlpatterns = [
     path('', include('social_django.urls', namespace='social')),
     path('', include('issues.urls')),
     path('logout/', logout_view, name='logout'),
+    path('bye/', TemplateView.as_view(template_name='registration/logout.html'), name='bye'),
 ]

@@ -96,7 +96,3 @@ def issues_list(request, owner, repo):
         return render(request, 'issues/error.html', {
             'message': f'Failed to fetch issues: {error_message}'
         })
-
-
-def logout_view(request):
-    return render(request, 'registration/logout.html')
