@@ -3,4 +3,8 @@
     file_server /static/* {
         root /app/staticfiles
     }
+    header /sw.js {
+        Cache-Control "no-cache"
+        Service-Worker-Allowed "/"
+    }
 } 

@@ -4,6 +4,9 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from django.views.generic import TemplateView
+from django.views.decorators.cache import cache_control
+from django.contrib.staticfiles.views import serve
 
 
 def logout_view(request):
@@ -12,9 +15,16 @@ def logout_view(request):
     return redirect(settings.LOGOUT_REDIRECT_URL)
 
 
+@cache_control(max_age=0)
+def serve_service_worker(request):
+    """Serve the service worker with no caching"""
+    return serve(request, 'js/github-proxy-sw.js')
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('issues.urls')),
     path('', include('social_django.urls', namespace='social')),
     path('logout/', logout_view, name='logout'),
+    path('sw.js', serve_service_worker, name='service-worker'),
 ]

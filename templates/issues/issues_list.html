@@ -149,6 +149,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    /* Initialize Masonry layout */
     var grid = document.querySelector('.masonry-grid');
     var masonry = new Masonry(grid, {
         itemSelector: '.masonry-grid-item',
@@ -157,7 +158,17 @@ document.addEventListener('DOMContentLoaded', function() {
         percentPosition: true
     });
 
-    // Initialize masonry after images are loaded
+    /* Add lazy loading to all images and proxy GitHub URLs */
+    document.querySelectorAll('.prose img').forEach(function(img) {
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        /* Proxy GitHub URLs through our service worker */
+        if (img.src.startsWith('https://github.com/')) {
+            img.src = getProxiedGitHubUrl(img.src);
+        }
+    });
+
+    /* Initialize masonry after images are loaded */
     imagesLoaded(grid).on('progress', function() {
         masonry.layout();
     });
