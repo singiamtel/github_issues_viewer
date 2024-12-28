@@ -1,8 +1,6 @@
 from django import template
 from django.utils.safestring import mark_safe
-from django.urls import reverse
 import markdown2
-import re
 
 register = template.Library()
 

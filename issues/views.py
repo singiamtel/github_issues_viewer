@@ -1,11 +1,7 @@
 import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
-from django.http import HttpResponse, HttpResponseForbidden
 import requests
-import re
-from collections import OrderedDict
 
 logger = logging.getLogger('issues')
 
@@ -14,7 +10,7 @@ def home(request):
     return render(request, 'issues/home.html')
 
 
-def login(request):
+def login(_request):
     return redirect('social:begin', 'github')
 
 
@@ -78,7 +74,7 @@ def issues_list(request, owner, repo):
         logger.info(f"Authenticated as: {user_response.json().get('login')}")
 
     # Check installation permissions
-    installation_url = f'https://api.github.com/user/installations'
+    installation_url = 'https://api.github.com/user/installations'
     install_response = requests.get(installation_url, headers=headers)
     logger.info(f"Installation API response: {install_response.status_code}")
     if install_response.status_code == 200:

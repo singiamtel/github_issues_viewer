@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+dev_url = 'http://localhost:8000'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -108,7 +110,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # Ensure SITE_URL is properly formatted with http:// and no trailing slash
-raw_site_url = os.getenv('SITE_URL', 'http://localhost:8000')
+raw_site_url = os.getenv('SITE_URL', dev_url)
 SITE_URL = raw_site_url.rstrip('/')
 
 SOCIAL_AUTH_GITHUB_KEY = os.getenv('GITHUB_KEY')
@@ -133,12 +135,11 @@ LOGOUT_REDIRECT_URL = 'bye'
 CSRF_TRUSTED_ORIGINS = [
     'https://gh.garciadelacruz.es',
     'http://gh.garciadelacruz.es',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
+    dev_url,
 ]
 
 # Don't redirect to HTTPS in development (localhost)
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = True if SITE_URL != 'http://localhost:8000' else False
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True if SITE_URL != dev_url else False
 
 
 # Logging Configuration
