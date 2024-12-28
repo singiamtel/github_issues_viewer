@@ -163,9 +163,9 @@ document.addEventListener('DOMContentLoaded', function() {
         img.loading = 'lazy';
         img.decoding = 'async';
         /* Proxy GitHub URLs through our service worker */
-        if (img.src.startsWith('https://github.com/')) {
-            img.src = getProxiedGitHubUrl(img.src);
-        }
+        // if (img.src.startsWith('https://github.com/')) {
+        //     img.src = getProxiedGitHubUrl(img.src);
+        // }
     });
 
     /* Initialize masonry after images are loaded */
