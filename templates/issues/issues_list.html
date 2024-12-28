@@ -48,18 +48,26 @@
                     <span class="block text-2xl font-bold text-gray-900">{{ repo_data.stargazers_count }}</span>
                     <span class="text-sm text-gray-500">Stars</span>
                 </div>
-                <div class="text-center">
-                    <span class="block text-2xl font-bold text-gray-900">{{ repo_data.open_issues_count }}</span>
-                    <span class="text-sm text-gray-500">Open Issues</span>
-                </div>
             </div>
+        </div>
+        
+        <div class="mt-4 flex space-x-2">
+            <a href="?state=open" class="px-4 py-2 rounded-md {% if current_state == 'open' %}bg-green-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                Open Issues
+            </a>
+            <a href="?state=closed" class="px-4 py-2 rounded-md {% if current_state == 'closed' %}bg-purple-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                Closed Issues
+            </a>
+            <a href="?state=all" class="px-4 py-2 rounded-md {% if current_state == 'all' %}bg-blue-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                All Issues
+            </a>
         </div>
     </div>
 
     <div class="masonry-grid">
         {% for issue in issues %}
         <div class="masonry-grid-item">
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            <div class="issue-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                 <div class="p-6">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
@@ -116,13 +124,13 @@
                     </div>
                 </div>
 
-                <div class="bg-gray-50 px-6 py-4">
+                <!-- <div class="bg-gray-50 px-6 py-4">
                     <a href="{{ issue.html_url }}" target="_blank"
                        class="text-blue-500 hover:text-blue-600 font-medium text-sm flex items-center justify-center">
                         <span>View on GitHub</span>
                         <i class="fas fa-external-link-alt ml-2"></i>
                     </a>
-                </div>
+                </div> -->
             </div>
         </div>
         {% empty %}

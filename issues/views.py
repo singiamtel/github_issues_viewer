@@ -73,10 +73,11 @@ def issues_list(request, owner, repo):
             'message': f'Repository access error: {error_message}'
         })
 
-    # Get issues
+    # Get issues with state filter
     issues_url = f'https://api.github.com/repos/{owner}/{repo}/issues'
+    state = request.GET.get('state', 'closed')  # Default to closed issues
     response = requests.get(issues_url, headers=headers,
-                            params={'state': 'all'})
+                            params={'state': state})
 
     logger.info(f"Issues API response status: {response.status_code}")
     if response.status_code == 200:
@@ -85,7 +86,8 @@ def issues_list(request, owner, repo):
             'issues': issues,
             'owner': owner,
             'repo': repo,
-            'repo_data': repo_response.json()
+            'repo_data': repo_response.json(),
+            'current_state': state
         })
     else:
         error_message = response.json().get('message', 'Unknown error')
