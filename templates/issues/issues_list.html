@@ -9,7 +9,27 @@
         margin-top: 1rem;
         margin-bottom: 0.5rem;
     }
+    .masonry-grid {
+        width: 100%;
+    }
+    .masonry-grid-item {
+        width: 100%;
+        margin-bottom: 1.5rem;
+    }
+    @media (min-width: 768px) {
+        .masonry-grid-item {
+            width: calc(50% - 1rem);
+        }
+    }
+    @media (min-width: 1024px) {
+        .masonry-grid-item {
+            width: calc(33.333% - 1rem);
+        }
+    }
 </style>
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+
 <div class="max-w-7xl mx-auto">
     <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
         <div class="flex items-center justify-between">
@@ -24,7 +44,7 @@
                 </p>
             </div>
             <div class="flex items-center space-x-4">
-            <div class="text-center">
+                <div class="text-center">
                     <span class="block text-2xl font-bold text-gray-900">{{ repo_data.stargazers_count }}</span>
                     <span class="text-sm text-gray-500">Stars</span>
                 </div>
@@ -36,71 +56,73 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="masonry-grid">
         {% for issue in issues %}
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-            <div class="p-6">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                        <h3 class="text-lg font-semibold text-gray-900 hover:text-blue-500">
-                            <a href="{{ issue.html_url }}" target="_blank" class="hover:underline">
-                                {{ issue.title }}
-                            </a>
-                        </h3>
-                        <p class="text-sm text-gray-500 mt-1">
-                            #{{ issue.number }} opened by
-                            <a href="{{ issue.user.html_url }}" target="_blank" class="text-blue-500 hover:underline">
-                                {{ issue.user.login }}
-                            </a>
-                        </p>
+        <div class="masonry-grid-item">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 hover:text-blue-500">
+                                <a href="{{ issue.html_url }}" target="_blank" class="hover:underline">
+                                    {{ issue.title }}
+                                </a>
+                            </h3>
+                            <p class="text-sm text-gray-500 mt-1">
+                                #{{ issue.number }} opened by
+                                <a href="{{ issue.user.html_url }}" target="_blank" class="text-blue-500 hover:underline">
+                                    {{ issue.user.login }}
+                                </a>
+                            </p>
+                        </div>
+                        <div class="ml-4">
+                            {% if issue.state == 'open' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                Open
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                Closed
+                            </span>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="ml-4">
-                        {% if issue.state == 'open' %}
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            <i class="fas fa-exclamation-circle mr-1"></i>
-                            Open
+
+                    <div class="mt-4">
+                        <div class="text-gray-600 text-sm prose prose-sm max-w-none">
+                            {{ issue.body|markdown }}
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        {% for label in issue.labels %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                              style="background-color: #{{ label.color }}25; color: #{{ label.color }}">
+                            {{ label.name }}
                         </span>
-                        {% else %}
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                            <i class="fas fa-check-circle mr-1"></i>
-                            Closed
-                        </span>
-                        {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between text-sm text-gray-500">
+                        <div class="flex items-center">
+                            <i class="far fa-comment-alt mr-1"></i>
+                            {{ issue.comments }} comments
+                        </div>
+                        <div>
+                            Updated {{ issue.updated_at|date:"M d, Y" }}
+                        </div>
                     </div>
                 </div>
 
-                <div class="mt-4">
-                    <div class="text-gray-600 text-sm prose prose-sm max-w-none">
-                        {{ issue.body|markdown }}
-                    </div>
+                <div class="bg-gray-50 px-6 py-4">
+                    <a href="{{ issue.html_url }}" target="_blank"
+                       class="text-blue-500 hover:text-blue-600 font-medium text-sm flex items-center justify-center">
+                        <span>View on GitHub</span>
+                        <i class="fas fa-external-link-alt ml-2"></i>
+                    </a>
                 </div>
-
-                <div class="mt-4 flex flex-wrap gap-2">
-                    {% for label in issue.labels %}
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                          style="background-color: #{{ label.color }}25; color: #{{ label.color }}">
-                        {{ label.name }}
-                    </span>
-                    {% endfor %}
-                </div>
-
-                <div class="mt-4 flex items-center justify-between text-sm text-gray-500">
-                    <div class="flex items-center">
-                        <i class="far fa-comment-alt mr-1"></i>
-                        {{ issue.comments }} comments
-                    </div>
-                    <div>
-                        Updated {{ issue.updated_at|date:"M d, Y" }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-gray-50 px-6 py-4">
-                <a href="{{ issue.html_url }}" target="_blank"
-                   class="text-blue-500 hover:text-blue-600 font-medium text-sm flex items-center justify-center">
-                    <span>View on GitHub</span>
-                    <i class="fas fa-external-link-alt ml-2"></i>
-                </a>
             </div>
         </div>
         {% empty %}
@@ -116,4 +138,21 @@
         {% endfor %}
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var grid = document.querySelector('.masonry-grid');
+    var masonry = new Masonry(grid, {
+        itemSelector: '.masonry-grid-item',
+        columnWidth: '.masonry-grid-item',
+        gutter: 24,
+        percentPosition: true
+    });
+
+    // Initialize masonry after images are loaded
+    imagesLoaded(grid).on('progress', function() {
+        masonry.layout();
+    });
+});
+</script>
 {% endblock %} 
