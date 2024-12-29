@@ -204,13 +204,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize on load
     initMasonry();
 
-    // Add resize handler with debounce
-    let resizeTimeout;
     window.addEventListener('resize', function() {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(function() {
-            initMasonry();
-        }, 250);
+        initMasonry();
     });
 });
 </script>
