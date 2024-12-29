@@ -18,12 +18,17 @@
     }
     @media (min-width: 768px) {
         .masonry-grid-item {
-            width: calc(50% - 1rem);
+            width: calc(50% - 1.5rem);
         }
     }
     @media (min-width: 1024px) {
         .masonry-grid-item {
-            width: calc(33.333% - 1rem);
+            width: calc(50% - 2rem);
+        }
+    }
+    @media (min-width: 1536px) {
+        .masonry-grid-item {
+            width: calc(33.333% - 2rem);
         }
     }
     .issue-body a {
@@ -39,6 +44,16 @@
     }
     .issue-body li {
         margin-bottom: 0.5rem;
+    }
+    .issue-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+    }
+    .issue-body th, .issue-body td {
+        border: 1px solid #e2e8f0;
+        padding: 0.25rem;
+        text-align: left;
     }
 </style>
 <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
@@ -155,24 +170,47 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    /* Initialize Masonry layout */
-    var grid = document.querySelector('.masonry-grid');
-    var masonry = new Masonry(grid, {
-        itemSelector: '.masonry-grid-item',
-        columnWidth: '.masonry-grid-item',
-        gutter: 24,
-        percentPosition: true
-    });
+    let masonry;
+    
+    function initMasonry() {
+        const grid = document.querySelector('.masonry-grid');
+        if (masonry) {
+            masonry.destroy();
+        }
+        
+        let gutterSize = window.innerWidth >= 1536 ? 32 : 
+                        window.innerWidth >= 1024 ? 32 : 
+                        window.innerWidth >= 768 ? 24 : 16;
+        
+        masonry = new Masonry(grid, {
+            itemSelector: '.masonry-grid-item',
+            columnWidth: '.masonry-grid-item',
+            gutter: gutterSize,
+            percentPosition: true
+        });
 
-    /* Add lazy loading to all images and proxy GitHub URLs */
-    document.querySelectorAll('.prose img').forEach(function(img) {
-        img.loading = 'lazy';
-        img.decoding = 'async';
-    });
+        /* Add lazy loading to all images and proxy GitHub URLs */
+        document.querySelectorAll('.prose img').forEach(function(img) {
+            img.loading = 'lazy';
+            img.decoding = 'async';
+        });
 
-    /* Initialize masonry after images are loaded */
-    imagesLoaded(grid).on('progress', function() {
-        masonry.layout();
+        /* Initialize masonry after images are loaded */
+        imagesLoaded(grid).on('progress', function() {
+            masonry.layout();
+        });
+    }
+
+    // Initialize on load
+    initMasonry();
+
+    // Add resize handler with debounce
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            initMasonry();
+        }, 250);
     });
 });
 </script>
