@@ -1,2 +1,8 @@
 :80 {
+    handle /static/* {
+        root * /app/staticfiles
+        file_server
+        try_files {path} {path}/
+    }
+    
     reverse_proxy web:8000
