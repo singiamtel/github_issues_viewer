@@ -20,11 +20,19 @@ def select_repository(request):
     recent_repos = request.session.get('recent_repos', [])
 
     if request.method == 'POST':
-        repo_url = request.POST.get('repo_url', '')
+        repo_url = request.POST.get('repo_url', '').strip()
         try:
-            # Extract owner and repo from URL like https://github.com/owner/repo
-            parts = repo_url.strip('/').split('/')
-            owner, repo = parts[-2], parts[-1]
+            # Handle both formats: full URL and owner/repo
+            if 'github.com' in repo_url:
+                # Extract owner and repo from URL like https://github.com/owner/repo
+                parts = repo_url.strip('/').split('/')
+                owner, repo = parts[-2], parts[-1]
+            else:
+                # Handle owner/repo format
+                parts = repo_url.strip('/').split('/')
+                if len(parts) != 2:
+                    raise ValueError("Invalid repository format. Use 'owner/repo' or full GitHub URL")
+                owner, repo = parts[0], parts[1]
 
             # Add to recent repos
             repo_data = {'owner': owner, 'repo': repo,

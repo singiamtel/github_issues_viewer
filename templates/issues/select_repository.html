@@ -15,7 +15,7 @@
             {% csrf_token %}
             <div>
                 <label for="repo_url" class="block text-sm font-medium text-gray-700 mb-2">
-                    GitHub Repository URL
+                    GitHub Repository
                 </label>
                 <div class="mt-1 relative rounded-md shadow-sm">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -26,12 +26,12 @@
                         name="repo_url"
                         id="repo_url"
                         class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-12 sm:text-sm border-gray-300 rounded-md"
-                        placeholder="https://github.com/owner/repository"
+                        placeholder="owner/repo or https://github.com/owner/repo"
                         required
                     >
                 </div>
                 <p class="mt-2 text-sm text-gray-500">
-                    Enter the full URL of the GitHub repository you want to view issues from.
+                    Enter either the repository path (e.g. owner/repo) or the full GitHub URL.
                 </p>
             </div>
 
@@ -76,7 +76,7 @@
                 </li>
                 <li class="flex items-start">
                     <i class="fas fa-link text-blue-500 mt-1 mr-3"></i>
-                    <span>The URL should be in the format: https://github.com/owner/repository</span>
+                    <span>You can use either format: owner/repo or https://github.com/owner/repo</span>
                 </li>
                 <li class="flex items-start">
                     <i class="fas fa-lock text-blue-500 mt-1 mr-3"></i>
