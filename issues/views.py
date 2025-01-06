@@ -79,15 +79,31 @@ def issues_list(request, owner, repo):
             'message': f'Repository access error: {error_message}'
         })
 
-    # Get issues with state filter
+    # Get issues with state and search filter
     issues_url = f'https://api.github.com/repos/{owner}/{repo}/issues'
     state = request.GET.get('state', 'closed')  # Default to closed issues
-    response = requests.get(issues_url, headers=headers,
-                            params={'state': state})
+    search_query = request.GET.get('q', '').strip()
+    
+    params = {'state': state}
+    if state == 'all':
+        params['state'] = 'all'
+    
+    response = requests.get(issues_url, headers=headers, params=params)
 
     logger.info(f"Issues API response status: {response.status_code}")
     if response.status_code == 200:
         issues = response.json()
+        
+        # Filter issues by search query if provided
+        if search_query:
+            search_query = search_query.lower()
+            filtered_issues = []
+            for issue in issues:
+                title = issue['title'].lower()
+                body = issue.get('body', '').lower() if issue.get('body') else ''
+                if search_query in title or search_query in body:
+                    filtered_issues.append(issue)
+            issues = filtered_issues
 
         # Add to recent repos if successful
         recent_repos = request.session.get('recent_repos', [])
