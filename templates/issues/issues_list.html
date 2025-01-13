@@ -210,12 +210,6 @@ document.addEventListener('DOMContentLoaded', function() {
             percentPosition: true
         });
 
-        /* Add lazy loading to all images and proxy GitHub URLs */
-        document.querySelectorAll('.prose img').forEach(function(img) {
-            img.loading = 'lazy';
-            img.decoding = 'async';
-        });
-
         /* Initialize masonry after images are loaded */
         imagesLoaded(grid).on('progress', function() {
             masonry.layout();
