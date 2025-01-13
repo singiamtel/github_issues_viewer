@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
             masonry.destroy();
         }
         
-        let gutterSize = window.innerWidth >= 1536 ? 32 : 
+        const gutterSize = window.innerWidth >= 1536 ? 32 : 
                         window.innerWidth >= 1024 ? 32 : 
                         window.innerWidth >= 768 ? 24 : 16;
         
